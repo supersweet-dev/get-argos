@@ -4,8 +4,8 @@ sudo apt update
 sudo apt upgrade
 sudo apt-get update
 sudo apt-get upgrade
-sudo apt --yes --force-yes install git
-sudo apt-get --yes --force-yes install cmake libfreeimage-dev libfreeimageplus-dev freeglut3-dev libxi-dev libxmu-dev liblua5.3-dev lua5.3 doxygen graphviz libgraphviz-dev asciidoc  qtbase5-dev qtchooser qt5-qmake qtbase5-dev-tools build-essential
+sudo apt --yes --force-yes install git build-essential
+sudo apt-get --yes --force-yes install cmake libfreeimage-dev libfreeimageplus-dev freeglut3-dev libxi-dev libxmu-dev liblua5.3-dev lua5.3 doxygen graphviz libgraphviz-dev asciidoc  qtbase5-dev qtchooser qt5-qmake qtbase5-dev-tools
 git clone https://github.com/ilpincy/argos3.git argos3
 cd argos3 && mkdir build_simulator && cd build_simulator
 cmake ../src && make && make doc
