@@ -16,3 +16,13 @@ echo  "/usr/local/lib" | sudo tee -a /etc/ld.so.conf
 sudo ldconfig
 ./build.sh
 argos3 -c experiments/Random_CPFA_r104_tag1024_20by20.xml
+while getopts ":h" option; do
+   case $option in
+      h) # display Help
+         Help
+         exit;;
+     \?) # incorrect option
+         echo "Error: Invalid option"
+         exit;;
+   esac
+done
