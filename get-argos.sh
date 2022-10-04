@@ -14,9 +14,16 @@ Help() {
 }
 Clean() {
    sudo rm -rf argos3
-   sudo apt --purge remove git build-essential
-   sudo apt-get --purge remove cmake libfreeimage-dev libfreeimageplus-dev freeglut3-dev libxi-dev libxmu-dev liblua5.3-dev lua5.3 doxygen graphviz libgraphviz-dev asciidoc qtbase5-dev qtchooser qt5-qmake qtbase5-dev-tools
+
+   if [[ "$OSTYPE" == "darwin"* ]]; then
+      echo "I'm not gonna clean your Mac installs... at least homebrew is cleaner than anything."
+   else
+      sudo apt --purge remove git build-essential
+      sudo apt-get --purge remove cmake libfreeimage-dev libfreeimageplus-dev freeglut3-dev libxi-dev libxmu-dev liblua5.3-dev lua5.3 doxygen graphviz libgraphviz-dev asciidoc qtbase5-dev qtchooser qt5-qmake qtbase5-dev-tools
+   fi
+
 }
+
 Wsl() {
    echo "deb http://us.archive.ubuntu.com/ubuntu/ trusty main restricted universe\ndeb-src http://us.archive.ubuntu.com/ubuntu/ trusty main\ndeb http://us.archive.ubuntu.com/ubuntu/ trusty-security main restricted universe\ndeb http://us.archive.ubuntu.com/ubuntu/ trusty-updates main restricted universe\ndeb http://us.archive.ubuntu.com/ubuntu/ trusty-backports main restricted universe" | sudo tee -a /etc/apt/sources.list
    export DISPLAY="$(grep nameserver /etc/resolv.conf | sed 's/nameserver //'):0" >>~/.bashrc
@@ -24,15 +31,20 @@ Wsl() {
    sudo apt install x11-apps
 }
 InstallArgos() {
-   sudo apt update
-   sudo apt --yes --force-yes upgrade
-   sudo apt-get update
-   sudo apt-get --yes --force-yes upgrade
-   sudo apt --yes --force-yes install git build-essential
-   sudo apt-get --yes --force-yes install cmake libfreeimage-dev libfreeimageplus-dev freeglut3-dev libxi-dev libxmu-dev liblua5.3-dev lua5.3 doxygen graphviz libgraphviz-dev asciidoc qtbase5-dev qtchooser qt5-qmake qtbase5-dev-tools
+
+   if [[ "$OSTYPE" == "darwin"* ]]; then
+      brew install pkg-config cmake libpng freeimage lua qt docbook asciidoc graphviz doxygen
+   else
+      sudo apt update
+      sudo apt --yes --force-yes upgrade
+      sudo apt-get update
+      sudo apt-get --yes --force-yes upgrade
+      sudo apt --yes --force-yes install git build-essential
+      sudo apt-get --yes --force-yes install cmake libfreeimage-dev libfreeimageplus-dev freeglut3-dev libxi-dev libxmu-dev liblua5.3-dev lua5.3 doxygen graphviz libgraphviz-dev asciidoc qtbase5-dev qtchooser qt5-qmake qtbase5-dev-tools
+   fi
    git clone https://github.com/ilpincy/argos3.git argos3
    cd argos3 && mkdir build_simulator && cd build_simulator
-   cmake ../src && make && make doc
+   cmake ../src && sudo make install && make doc
    cd ..
    git clone https://github.com/lukey11-zz/Foraging-Swarm-Robot-ARGoS Foraging-Swarm-Robot-ARGoS
    cd Foraging-Swarm-Robot-ARGoS/CPFA
