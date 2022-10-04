@@ -24,12 +24,6 @@ Clean() {
 
 }
 
-Wsl() {
-   echo "deb http://us.archive.ubuntu.com/ubuntu/ trusty main restricted universe\ndeb-src http://us.archive.ubuntu.com/ubuntu/ trusty main\ndeb http://us.archive.ubuntu.com/ubuntu/ trusty-security main restricted universe\ndeb http://us.archive.ubuntu.com/ubuntu/ trusty-updates main restricted universe\ndeb http://us.archive.ubuntu.com/ubuntu/ trusty-backports main restricted universe" | sudo tee -a /etc/apt/sources.list
-   export DISPLAY="$(grep nameserver /etc/resolv.conf | sed 's/nameserver //'):0" >>~/.bashrc
-   source ~/.bashrc
-   sudo apt install x11-apps
-}
 InstallArgos() {
 
    if [[ "$OSTYPE" == "darwin"* ]]; then
@@ -58,6 +52,14 @@ InstallArgos() {
    cmake -DCMAKE_BUILD_TYPE=Debug .. && make
    cd ..
    argos3 -c experiments/diffusion_10.argos
+}
+
+Wsl() {
+   echo "deb http://us.archive.ubuntu.com/ubuntu/ trusty main restricted universe\ndeb-src http://us.archive.ubuntu.com/ubuntu/ trusty main\ndeb http://us.archive.ubuntu.com/ubuntu/ trusty-security main restricted universe\ndeb http://us.archive.ubuntu.com/ubuntu/ trusty-updates main restricted universe\ndeb http://us.archive.ubuntu.com/ubuntu/ trusty-backports main restricted universe" | sudo tee -a /etc/apt/sources.list
+   export DISPLAY="$(grep nameserver /etc/resolv.conf | sed 's/nameserver //'):0" >>~/.bashrc
+   source ~/.bashrc
+   sudo apt install x11-apps
+   InstallArgos
 }
 
 while getopts ":cwih" option; do
