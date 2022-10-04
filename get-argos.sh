@@ -2,11 +2,13 @@
 
 sudo apt-get update
 sudo apt-get upgrade
-sudo apt install --y git
-sudo apt-get install --y cmake libfreeimage-dev libfreeimageplus-dev qt5-default freeglut3-dev libxi-dev libxmu-dev liblua5.3-dev lua5.3 doxygen graphviz libgraphviz-dev asciidoc  qtbase5-dev qtchooser qt5-qmake qtbase5-dev-tools build-essentials
-wget -O argos3_simulator-3.0.0-x86_64-beta59.deb "https://drive.google.com/uc?export=download&id=1oO2lb2LuLq4IrZmNMiJurWTotHp_pDye"
-sudo apt install ./argos3_simulator-3.0.0-x86_64-beta59.deb
-git clone https://github.com/lukey11-zz/Foraging-Swarm-Robot-ARGoS
+sudo apt install git
+sudo apt-get install cmake libfreeimage-dev libfreeimageplus-dev qt5-default freeglut3-dev libxi-dev libxmu-dev liblua5.3-dev lua5.3 doxygen graphviz libgraphviz-dev asciidoc  qtbase5-dev qtchooser qt5-qmake qtbase5-dev-tools build-essentials
+git clone https://github.com/ilpincy/argos3.git argos3
+cd argos3 && mkdir build_simulator && cd build_simulator
+cmake ../src && make && make doc
+cd ..
+git clone https://github.com/lukey11-zz/Foraging-Swarm-Robot-ARGoS Foraging-Swarm-Robot-ARGoS
 cd Foraging-Swarm-Robot-ARGoS/CPFA
 echo  "/usr/local/lib" | sudo tee -a /etc/ld.so.conf
 sudo ldconfig
