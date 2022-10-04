@@ -41,7 +41,7 @@ InstallArgos() {
    ./build.sh
    argos3 -c experiments/Random_CPFA_r104_tag1024_20by20.xml
 }
-while getopts ":h" option; do
+while getopts ":cwih" option; do
    case $option in
    c) # nuke everything cept x11-apps
       Clean
