@@ -1,7 +1,7 @@
 # I made a script that will install Argos for you!
 
 
- in order for it to work you need to have wsl up and running and take care of everything that happens windows side on your own, but this will go through everything else 
+ in order for it to work you need to have wsl up and running and take care of everything that happens windows side on your own, but this will go through everything else
  
 
 please navigate to whichever folder you use for this class (in my case that's `~/Documents/projects/robotics`) 
@@ -11,14 +11,11 @@ and then run this command:
 which will download my script for you 
 
 
-then tell your computer that you indeed do trust me very much `sudo chmod u+x get-argos.sh` and after that if you run `./get-argos.sh` you will see that nothing happens
+then tell your computer that you indeed do trust me very much `sudo chmod u+x get-argos.sh` and after that you can use the following commands:
 
+use `./get-argos.sh -h` to read about how this tool actually works 
 
-use `./get-argos.sh -h` instead to read about how this tool actually works 
-
-`./get-argos.sh -i` will take care of the installation on native ubuntu and macos
-
-`./get-argos.sh -w` will go through the same install, but it will do some wsl only commands first
+`./get-argos.sh -i` will take care of the installation on native ubuntu, wsl, and macos, it will drop argos into the current folder.
 
  `./get-argos.sh -c` will undo everything this installer did in case you wanna start from scratch again 
  
