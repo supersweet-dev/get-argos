@@ -8,8 +8,34 @@ Help() {
    echo "options:"
    echo "h     you just used this"
    echo "i     get argos"
+   echo "d     configure display in wsl"
    echo "c     nuke everything this did, run at your own risk"
    echo
+}
+FindDisplay() {
+   if [[ "$OSTYPE" == "darwin"* ]]; then
+      echo "why would you do this?"
+      exit
+   fi
+   # Brute forces finding the proper display variable.
+   if export DISPLAY=":0" && argos3 -c experiments/diffusion_10.argos; then
+      echo "export DISPLAY=${DISPLAY}" >>~/.bashrc
+      source ~/.bashrc
+   elif export DISPLAY="$(grep nameserver /etc/resolv.conf | sed 's/nameserver //'):0" && argos3 -c experiments/diffusion_10.argos; then
+      echo "export DISPLAY=${DISPLAY}" >>~/.bashrc
+      source ~/.bashrc
+   elif export DISPLAY=$(grep nameserver /etc/resolv.conf | awk '{print $2}'):0.0 && argos3 -c experiments/diffusion_10.argos; then
+      echo "export DISPLAY=${DISPLAY}" >>~/.bashrc
+      source ~/.bashrc
+   elif export DISPLAY=$(cat /etc/resolv.conf | grep nameserver | awk '{print $2}'):0 && argos3 -c experiments/diffusion_10.argos; then
+      echo "export DISPLAY=${DISPLAY}" >>~/.bashrc
+      source ~/.bashrc
+   elif export DISPLAY=$(route.exe print | grep 0.0.0.0 | head -1 | awk '{print $4}'):0.0 && argos3 -c experiments/diffusion_10.argos; then
+      echo "export DISPLAY=${DISPLAY}" >>~/.bashrc
+      source ~/.bashrc
+   else
+      echo "Proper display not found. Check your Xming config."
+   fi
 }
 Clean() {
    # Undo everything we did.
@@ -62,25 +88,7 @@ InstallArgos() {
    cmake -DCMAKE_BUILD_TYPE=Debug .. && make
    cd ..
    if grep -qi wsl /proc/sys/kernel/osrelease; then
-      # Brute forces finding the proper display variable.
-      if export DISPLAY=":0" && argos3 -c experiments/diffusion_10.argos; then
-         echo "export DISPLAY=${DISPLAY}" >>~/.bashrc
-         source ~/.bashrc
-      elif export DISPLAY="$(grep nameserver /etc/resolv.conf | sed 's/nameserver //'):0" && argos3 -c experiments/diffusion_10.argos; then
-         echo "export DISPLAY=${DISPLAY}" >>~/.bashrc
-         source ~/.bashrc
-      elif export DISPLAY=$(grep nameserver /etc/resolv.conf | awk '{print $2}'):0.0 && argos3 -c experiments/diffusion_10.argos; then
-         echo "export DISPLAY=${DISPLAY}" >>~/.bashrc
-         source ~/.bashrc
-      elif export DISPLAY=$(cat /etc/resolv.conf | grep nameserver | awk '{print $2}'):0 && argos3 -c experiments/diffusion_10.argos; then
-         echo "export DISPLAY=${DISPLAY}" >>~/.bashrc
-         source ~/.bashrc
-      elif export DISPLAY=$(route.exe print | grep 0.0.0.0 | head -1 | awk '{print $4}'):0.0 && argos3 -c experiments/diffusion_10.argos; then
-         echo "export DISPLAY=${DISPLAY}" >>~/.bashrc
-         source ~/.bashrc
-      else
-         echo "Proper display not found. Check your Xming config."
-      fi
+      FindDisplay
    else
       argos3 -c experiments/diffusion_10.argos
    fi
@@ -94,6 +102,10 @@ while getopts ":cih" option; do
       ;;
    i)
       InstallArgos #this is what you've been waiting for
+      exit
+      ;;
+   d)
+      FindDisplay
       exit
       ;;
    h) # display Help
