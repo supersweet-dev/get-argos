@@ -8,7 +8,8 @@ Help() {
    echo "options:"
    echo "h     you just used this"
    echo "i     get argos"
-   echo "d     configure display in wsl"
+   echo "w     configure display in wsl"
+   echo "d     install dependencies"
    echo "c     nuke everything this did, run at your own risk"
    echo
 }
@@ -51,14 +52,17 @@ Clean() {
    fi
 
 }
-
-InstallArgos() {
+UpdateUbuntuSources() {
+   echo "deb <http://us.archive.ubuntu.com/ubuntu/> trusty main restricted universe \ndeb <http://us.archive.ubuntu.com/ubuntu/> trusty-security main restricted universe \ndeb <http://us.archive.ubuntu.com/ubuntu/> trusty-updates main restricted universe \ndeb <http://us.archive.ubuntu.com/ubuntu/> trusty-backports main restricted universe \n#deb-src <http://us.archive.ubuntu.com/ubuntu/> trusty main \ndeb-src <http://us.archive.ubuntu.com/ubuntu/> trusty main" | sudo tee -a /etc/apt/sources.list
+   sudo awk -i inplace '!seen[$0]++' /etc/apt/sources.list
+}
+InstallDependencies() {
    # Takes care of all installations across WSL, Ubuntu, and MacOS
    if [[ "$OSTYPE" == "darwin"* ]]; then
       brew install pkg-config cmake libpng freeimage lua qt docbook asciidoc graphviz doxygen
    else
+      UpdateUbuntuSources
       if grep -qi wsl /proc/sys/kernel/osrelease; then
-         echo "deb <http://us.archive.ubuntu.com/ubuntu/> trusty main restricted universe \ndeb <http://us.archive.ubuntu.com/ubuntu/> trusty-security main restricted universe \ndeb <http://us.archive.ubuntu.com/ubuntu/> trusty-updates main restricted universe \ndeb <http://us.archive.ubuntu.com/ubuntu/> trusty-backports main restricted universe \n#deb-src <http://us.archive.ubuntu.com/ubuntu/> trusty main \ndeb-src <http://us.archive.ubuntu.com/ubuntu/> trusty main" | sudo tee -a /etc/apt/sources.list
          sudo apt install x11-apps
       fi
       sudo apt update
@@ -70,23 +74,29 @@ InstallArgos() {
       echo "/usr/local/lib" | sudo tee -a /etc/ld.so.conf
       sudo ldconfig
    fi
-
+}
+InstallArgos() {
+   InstallDependencies
+   #Clones and builds Argos3
    git clone https://github.com/ilpincy/argos3.git argos3
    cd argos3 && mkdir build_simulator && cd build_simulator
    cmake ../src && make && make doc
    sudo make install
+   #Makes Argos3 available system-wide
    for dir in /usr/local/git/bin /usr/local/bin; do
       case "$PATH" in
       $dir:* | *:$dir:* | *:$dir) : ;; # already there, do nothing
       *) PATH=$PATH:$dir ;;            # otherwise add it
       esac
    done
+   #Clones and builds examples
    cd ../..
    git clone https://github.com/ilpincy/argos3-examples.git argos3-examples
    cd argos3-examples
    mkdir build && cd build
    cmake -DCMAKE_BUILD_TYPE=Debug .. && make
    cd ..
+   #Runs an experiment
    if grep -qi wsl /proc/sys/kernel/osrelease; then
       FindDisplay
    else
@@ -94,7 +104,7 @@ InstallArgos() {
    fi
 }
 
-while getopts ":cih" option; do
+while getopts ":cihwd" option; do
    case $option in
    c) # nuke everything cept x11-apps
       Clean
@@ -104,8 +114,12 @@ while getopts ":cih" option; do
       InstallArgos #this is what you've been waiting for
       exit
       ;;
-   d)
+   w)
       FindDisplay
+      exit
+      ;;
+   d)
+      InstallDependencies
       exit
       ;;
    h) # display Help
